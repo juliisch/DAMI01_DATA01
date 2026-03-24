@@ -127,7 +127,7 @@ def model_dbscan(eps_stand, min_samples_var):
     return(model_dbscan)
 
 
-# Funktion:         Erstellt ein Fuzzy-C-Means-Modell auf Basis einer Distanzmatrix
+# Funktion:         Erstellt ein Fuzzy C-Medoids auf Basis einer Distanzmatrix
 # Input:            D (Distanzmatrix)
 #                   n_clusters (Anzahl der Cluster)
 #                   m (Fuzziness-Exponent)
@@ -223,7 +223,15 @@ def dunn_index_dtw(D, labels):
     labels = np.array(labels)
     clusters = [np.where(labels == l)[0] for l in np.unique(labels)]
     k = len(clusters)
-    
+        
+    # min(δ(C_i, C_j)) (Abstand zwischen zwei verschiedenen Clustern)
+    inter_dist = []
+    for i in range(k):
+        for j in range(i+1, k):
+            dist_ij = D[np.ix_(clusters[i], clusters[j])]
+            inter_dist.append(np.min(dist_ij))
+    min_delta = min(inter_dist)
+
     # max(Δ(C_l))
     delta = []
     for cluster in clusters:
@@ -232,18 +240,10 @@ def dunn_index_dtw(D, labels):
             continue
         subD = D[np.ix_(cluster, cluster)]
         delta.append(np.max(subD))
-    delta_max = max(delta)
-    
-    # δ(C_i, C_j)
-    inter_dist = []
-    for i in range(k):
-        for j in range(i+1, k):
-            dist_ij = D[np.ix_(clusters[i], clusters[j])]
-            inter_dist.append(np.min(dist_ij))
-    delta_min = min(inter_dist)
+    max_delta = max(delta)
     
     # Dunn-Index
-    dunn_index = delta_min / delta_max
+    dunn_index = min_delta / max_delta
 
     return dunn_index
 
