@@ -25,7 +25,7 @@ from sklearn.metrics import (
     silhouette_score,
     davies_bouldin_score,
 )
-from notebooks.parameter import *
+from parameter import *
 
 # Funktion:         Bestimmt den Key-Wert vom Dictionary
 # Input:            value (Wert-Element)
@@ -79,11 +79,11 @@ def dtw_transformation(D):
 # Input:            k (Anzahl der Cluster)
 # Output:           model_agglomerative (Agglomerative-Clustering-Modell)
 # Funktionsweise:   Erzeugt ein Agglomerative-Clustering-Modell mit der angegebenen Clusteranzahl
-def model_agglomerative(k):
+def model_agglomerative(k, linkage):
     model_agglomerative = AgglomerativeClustering(
         n_clusters=k,
         metric="precomputed",
-        linkage="average"
+        linkage=linkage
     )
     return(model_agglomerative)
 
@@ -91,28 +91,33 @@ def model_agglomerative(k):
 # Input:            k (Anzahl der Cluster)
 # Output:           model_spectral (Spectral-Clustering-Modell)
 # Funktionsweise:   Erzeugt ein Spectral-Clustering-Modell mit der angegebenen Clusteranzahl
-def model_spectral(k):
+def model_spectral(k, assign_label):
     model_spectral = SpectralClustering(
         n_clusters=k,
         affinity="precomputed",
-        assign_labels="kmeans",
+        assign_labels=assign_label,
         random_state=123
     )
     return(model_spectral)
-
 
 # Funktion:         Erstellung eines K-Medoids-Modells
 # Input:            k (Anzahl der Cluster)
 # Output:           model_kmedoids (K-Medoids-Modell)
 # Funktionsweise:   Erzeugt ein K-Medoids-Modell mit der angegebenen Clusteranzahl
-def model_kmedoids(k):
+# def model_kmedoids(k):
+#     model_kmedoids = KMedoids(
+#         n_clusters=k,
+#         metric="precomputed",
+#         init="k-medoids++",
+#         random_state=123)
+#     return(model_kmedoids)
+def model_kmedoids(k, init):
     model_kmedoids = KMedoids(
         n_clusters=k,
         metric="precomputed",
-        init="k-medoids++",
+        init=init,
         random_state=123)
     return(model_kmedoids)
-
 
 # Funktion:         Erstellung eines DBSCAN Modells
 # Input:            eps_stand (Epsilon)
@@ -125,7 +130,6 @@ def model_dbscan(eps_stand, min_samples_var):
         min_samples=min_samples_var, 
         metric="precomputed")
     return(model_dbscan)
-
 
 # Funktion:         Erstellt ein Fuzzy C-Medoids auf Basis einer Distanzmatrix
 # Input:            D (Distanzmatrix)
@@ -168,59 +172,15 @@ def model_fuzzy(D, n_clusters=10, m=2, max_iteration=100, konvergenz=1e-5):
 
     return(U)
 # In Anlehnung an: Dias, M. fuzzy-c-means. Abgerufen am 17.03.2026 von https://github.com/omadson/fuzzy-c-means/blob/master/fcmeans/main.py
+# TODO: NEU !!!
 
 # ---------- MODELL-HILFSFUNKTIONEN ----------
-
-# Funktion:         Bestimmung der optimalen Clusteranzahl
-# Input:            D (Distanzmatrix)
-#                   model_name (Names des Modells)
-# Output:           optimal_k (optimale Clusteranzahl)
-# Funktionsweise:   Es werden für das übergebende Modell verschiedene Clusteranzahlen k getestet.
-#                   Dazu wird jedes k auf das Modell angewendet und dafür den Silhouette-Score bestimmt. 
-#                   Das k mit dem höchsten Score, wird als optimales k zurückgegeben. 
-def find_optimal_k(D, model_name, A = None):
-    # Liste der zu testen Clusteranzahlen k 
-    list_potential_k = [2, 3, 4, 5, 7, 10, 15, 20] 
-    # Liste der Silhouette-Score-Werte
-    list_scores = []
-
-    if model_name == "agglomerative":
-        for k in list_potential_k:
-            labels = model_agglomerative(k).fit_predict(D)
-            list_scores.append(silhouette_score(D, labels, metric="precomputed"))
-
-    if model_name == "spectral":
-        for k in list_potential_k:
-            model = model_spectral(k)
-            labels = model.fit_predict(A)
-            list_scores.append(silhouette_score(D, labels, metric="precomputed"))
-
-
-    if(model_name == "kmedoids"):
-        for k in list_potential_k:
-            model = model_kmedoids(k)
-            labels = model.fit_predict(D)
-            list_scores.append(silhouette_score(D, labels, metric="precomputed"))
-    
-
-    if(model_name == "fuzzy"):
-        for k in list_potential_k:
-            U = model_fuzzy(D, n_clusters=k)
-            labels = np.argmax(U, axis=1)
-            list_scores.append(silhouette_score(D, labels, metric="precomputed"))
-
-    # Silhouette-Score mit höchsten Wert, wird als optimales k gewählt
-    optimal_k = list(list_potential_k)[np.argmax(list_scores)] 
-
-    return(optimal_k)
-
 # Funktion:         Bestimmung des Dunn-Index
 # Input:            D (Distanzmatrix)
 #                   labels (Cluster-Zuordnung)
 # Output:           dunn_index (Dunn-Index)
 # Funktionsweise:   Bestimmung des Dunn-Index gemäß DI = min(δ(C_i, C_j)) / max(Δ(C_l)) 
 def dunn_index_dtw(D, labels):
-    labels = np.array(labels)
     clusters = [np.where(labels == l)[0] for l in np.unique(labels)]
     k = len(clusters)
         
@@ -336,6 +296,59 @@ def find_optimal_eps(D, k):
     eps = k_distances[knee.knee]
     return eps
 
+
+# Funktion:         Bestimmung der optimalen Clusteranzahl
+# Input:            D (Distanzmatrix)
+#                   model_name (Names des Modells)
+# Output:           optimal_k (optimale Clusteranzahl)
+# Funktionsweise:   Es werden für das übergebende Modell verschiedene Clusteranzahlen k getestet.
+#                   Dazu wird jedes k auf das Modell angewendet und dafür den Silhouette-Score bestimmt. 
+#                   Das k mit dem höchsten Score, wird als optimales k zurückgegeben. 
+def find_opt_params(D, model_name, A = None): # TODO
+    list_k = [2, 3, 4, 5, 6, 7,8, 9, 10] 
+
+    best_score = -1
+    best_params = {}
+
+    if(model_name == "kmedoids"):
+        for k in list_k:
+            for init in ["k-medoids++", "heuristic", "random"]:
+                labels = model_kmedoids(k, init).fit_predict(D)
+                score = silhouette_score(D, labels, metric="precomputed")
+                if score > best_score:
+                    best_score = score
+                    best_params = {"k": k, "init": init}
+
+    if model_name == "agglomerative":
+        for k in list_k:
+            for linkage in ["average", "complete", "single"]:
+                labels = model_agglomerative(k, linkage).fit_predict(D)
+                score = silhouette_score(D, labels, metric="precomputed")
+                if score > best_score:
+                    best_score = score
+                    best_params = {"k": k, "linkage": linkage}
+
+    if model_name == "spectral":
+        for k in list_k:
+            for assign_label in ["kmeans", "discretize"]:
+                labels = model_spectral(k, assign_label).fit_predict(A)
+                score = silhouette_score(D, labels, metric="precomputed")
+                if score > best_score:
+                    best_score = score
+                    best_params = {"k": k, "assign_label": assign_label}
+
+    if(model_name == "fuzzy"):
+        for k in list_k:
+            for m in [1.5, 2.0, 2.5, 3.0]:
+                U = model_fuzzy(D, n_clusters=k, m=m)
+                labels = np.argmax(U, axis=1)
+                score = silhouette_score(D, labels, metric="precomputed")
+                if score > best_score:
+                    best_score = score
+                    best_params = {"k": k, "m": m}
+
+    return best_params
+
 # Funktion:         Wendet eine Clusteringmethode auf alle DTW-Varianten an und evaluiert die Ergebnisse
 # Input:            clustering_model_name (Name der Clusteringmethode)
 #                   clustering_model (Clusteringmodell)
@@ -349,188 +362,46 @@ def find_optimal_eps(D, k):
 def runModel(clustering_model_name, clustering_model, D_dict, df_evaluate, n_run, X_scaled = None):
     print(f"  [Info] Starte Clusteringmethode {clustering_model_name}")
     dict_labels = {}
+
+    if(clustering_model_name == "kmedoids"):
+        for D_kind, D in D_dict.items():
+            best_params = find_opt_params(D, clustering_model_name) # Optimale Parameter bestimmen
+            labels = model_kmedoids(best_params["k"], init=best_params["init"]).fit_predict(D) # Modell mit optimalen Parametern anwenden
+            df_evaluate.loc[len(df_evaluate)] = [n_run, clustering_model_name, D_kind, best_params["k"], *evaluate_cluster(D, labels)] # Evaluationskennzahlen bestimmen
+            dict_labels[D_kind] = labels 
+
+    if(clustering_model_name == "agglomerative"):
+        for D_kind, D in D_dict.items():
+            best_params = find_opt_params(D, clustering_model_name) # Optimale Parameter bestimmen
+            labels = model_agglomerative(best_params["k"], best_params["linkage"]).fit_predict(D) # Modell mit optimalen Parametern anwenden
+            df_evaluate.loc[len(df_evaluate)] = [n_run, clustering_model_name, D_kind, best_params["k"], *evaluate_cluster(D, labels)] # Evaluationskennzahlen bestimmen
+            dict_labels[D_kind] = labels 
+
+    if(clustering_model_name == "spectral"):
+        for D_kind, D in D_dict.items():
+            A = dtw_transformation(D) # Affinitätsmatrix bestimmen
+            best_params = find_opt_params(D, clustering_model_name, A) # Optimale Parameter bestimmen
+            labels = model_spectral(best_params["k"], best_params["assign_label"]).fit_predict(A) # Modell mit optimalen Parametern anwenden
+            df_evaluate.loc[len(df_evaluate)] = [n_run, clustering_model_name, D_kind, best_params["k"], *evaluate_cluster(D, labels)] # Evaluationskennzahlen bestimmen
+            dict_labels[D_kind] = labels 
+
+    if(clustering_model_name == "fuzzy"):
+        for D_kind, D in D_dict.items():
+            best_params = find_opt_params(D, clustering_model_name) # Optimale Parameter bestimmen
+            U = model_fuzzy(D, n_clusters=best_params["k"], m=best_params["m"])
+            labels = np.argmax(U, axis=1)
+            n_clusters   = len(set(labels))
+            df_evaluate.loc[len(df_evaluate)] = [n_run, clustering_model_name, D_kind, best_params["k"], *evaluate_cluster(D, labels)] # Evaluationskennzahlen bestimmen
+            dict_labels[D_kind] = labels 
+
     if(clustering_model_name == "dbscan"):
         for D_kind, D in D_dict.items():
-            min_samples_var = int(np.log(len(X_scaled)))  # ln(n)
+            # Optimale Parameter bestimmen
+            min_samples_var = int(np.log(len(X_scaled)))  
             eps_stand   = round(find_optimal_eps(D, min_samples_var),0)
             labels = model_dbscan(eps_stand, min_samples_var).fit_predict(D)
             n_clusters   = len(set(labels))
             df_evaluate.loc[len(df_evaluate)] = [n_run, clustering_model_name, D_kind, n_clusters, *evaluate_cluster(D, labels)] # Evaluationskennzahlen bestimmen  
             dict_labels[D_kind] = labels 
 
-    elif(clustering_model_name == "spectral"):
-        for D_kind, D in D_dict.items():
-            A = dtw_transformation(D) # Affinitätsmatrix bestimmen
-            optimal_k = find_optimal_k(D, clustering_model_name, A) # Optimales K bestimmen
-            labels = clustering_model(optimal_k).fit_predict(A) # Model anwednen
-            df_evaluate.loc[len(df_evaluate)] = [n_run, clustering_model_name, D_kind, optimal_k, *evaluate_cluster(D, labels)] # Evaluationskennzahlen bestimmen
-            dict_labels[D_kind] = labels 
-
-    elif(clustering_model_name == "fuzzy"):
-        for D_kind, D in D_dict.items():
-            optimal_k = find_optimal_k(D, clustering_model_name) # Optimales K bestimmen
-            labels = np.argmax(model_fuzzy(D,   n_clusters=optimal_k),   axis=1)
-            n_clusters   = len(set(labels))
-            df_evaluate.loc[len(df_evaluate)] = [n_run, clustering_model_name, D_kind, optimal_k, *evaluate_cluster(D, labels)] # Evaluationskennzahlen bestimmen
-            dict_labels[D_kind] = labels 
-
-    else:
-        for D_kind, D in D_dict.items():
-            optimal_k = find_optimal_k(D, clustering_model_name) # Optimales K bestimmen
-            labels = clustering_model(optimal_k).fit_predict(D) # Model anwednen
-            df_evaluate.loc[len(df_evaluate)] = [n_run, clustering_model_name, D_kind, optimal_k, *evaluate_cluster(D, labels)] # Evaluationskennzahlen bestimmen
-            dict_labels[D_kind] = labels 
-
     return(dict_labels)
-
-
-
-# ---------- BASELINE-MODELL ----------
- 
-# Funktion:         Erstellung eines K-Means-Baseline-Modells
-# Input:            k (Anzahl der Cluster)
-# Output:           model (K-Means-Modell)
-# Funktionsweise:   Erzeugt ein Standard-K-Means-Modell mit euklidischer Distanz
-def model_kmeans_baseline(k):
-    model = KMeans(
-        n_clusters=k,
-        init="k-means++",
-        n_init=10,
-        random_state=123,
-    )
-    return model
- 
- 
-# Funktion:         Bestimmung der optimalen Clusteranzahl für K-Means (Baseline)
-# Input:            X_scaled (skalierte Zeitreihen, 2D-Array)
-# Output:           optimal_k (optimale Clusteranzahl)
-# Funktionsweise:   Es werden verschiedene Clusteranzahlen k getestet.
-#                   Das k mit dem höchsten Silhouette-Score wird als optimales k zurückgegeben.
-def find_optimal_k_baseline(X_scaled):
-    list_potential_k = [2, 3, 4, 5, 7, 10, 15, 20]
-    list_scores = []
- 
-    for k in list_potential_k:
-        labels = model_kmeans_baseline(k).fit_predict(X_scaled)
-        list_scores.append(silhouette_score(X_scaled, labels))
- 
-    optimal_k = list_potential_k[np.argmax(list_scores)]
-    return optimal_k
- 
- 
-# Funktion:         Evaluation der Baseline-Clusterergebnisse
-# Input:            X_scaled (skalierte Zeitreihen, 2D-Array)
-#                   labels (Cluster-Zuordnung)
-# Output:           sil_score, dbi_score, dunn_index_score
-# Funktionsweise:   Berechnet Silhouette-Score und Davies-Bouldin-Index auf euklidischer Basis.
-#                   Der Dunn-Index wird ebenfalls auf Basis der euklidischen Distanzmatrix berechnet.
-def evaluate_baseline(X_scaled, labels):
-    from scipy.spatial.distance import squareform, pdist
- 
-    if len(set(labels)) < 2:
-        return np.nan, np.nan, np.nan
- 
-    sil_score = round(silhouette_score(X_scaled, labels), 2)
-    dbi_score = round(davies_bouldin_score(X_scaled, labels), 2)
- 
-    # Dunn-Index auf Basis der euklidischen Distanzmatrix
-    D_euc = squareform(pdist(X_scaled, metric="euclidean"))
-    dunn_index_score = round(dunn_index_euclidean(D_euc, labels), 2)
- 
-    return sil_score, dbi_score, dunn_index_score
- 
- 
-# Funktion:         Bestimmung des Dunn-Index (euklidisch)
-# Input:            D (euklidische Distanzmatrix)
-#                   labels (Cluster-Zuordnung)
-# Output:           dunn_index (Dunn-Index)
-# Funktionsweise:   Analog zu dunn_index_dtw, aber auf Basis der euklidischen Distanzmatrix
-def dunn_index_euclidean(D, labels):
-    labels = np.array(labels)
-    clusters = [np.where(labels == l)[0] for l in np.unique(labels)]
-    k = len(clusters)
- 
-    # max(Δ(C_l))
-    delta = []
-    for cluster in clusters:
-        if len(cluster) <= 1:
-            delta.append(0)
-            continue
-        subD = D[np.ix_(cluster, cluster)]
-        delta.append(np.max(subD))
-    delta_max = max(delta)
- 
-    if delta_max == 0:
-        return 0.0
- 
-    # δ(C_i, C_j)
-    inter_dist = []
-    for i in range(k):
-        for j in range(i + 1, k):
-            dist_ij = D[np.ix_(clusters[i], clusters[j])]
-            inter_dist.append(np.min(dist_ij))
-    delta_min = min(inter_dist)
- 
-    dunn_index = delta_min / delta_max
-    return dunn_index
- 
- 
-# Funktion:         Führt das Baseline-Modell über alle Durchläufe aus
-# Input:            X (Zeitreihenmatrix, alle Daten)
-#                   n_runs (Anzahl der Durchläufe)
-#                   n_sample (Anzahl der Zeitreihen pro Durchlauf)
-#                   df_evaluate (bestehendes Evaluations-DataFrame)
-# Output:           df_evaluate (erweitertes Evaluations-DataFrame)
-#                   df_labels_baseline (DataFrame mit Baseline-Labels)
-# Funktionsweise:   Verwendet dieselbe Sampling-Logik wie die DTW-Modelle,
-#                   wendet K-Means mit euklidischer Distanz an und speichert die Ergebnisse
-#                   im gleichen Format wie die anderen Modelle.
-def run_baseline(X, n_runs, n_sample, df_evaluate):
-    all_labels = []
-
-    for i in range(n_runs):
-        print(f"Durchlauf #{i+1}:")
-
-        # Gleiche Sampling-Logik wie bei den DTW-Modellen
-        rng = np.random.default_rng(seed=i * 3)
-        idx = rng.choice(len(X), n_sample, replace=False)
-        X_sample = X[idx]
-
-        # Skalierung
-        scaler = StandardScaler()
-        X_scaled = scaler.fit_transform(X_sample)
- 
-        # Optimales k bestimmen
-        optimal_k = find_optimal_k_baseline(X_scaled)
-        print(f"  [Info] Baseline K-Means: optimales k = {optimal_k}")
- 
-        # Modell anwenden
-        labels = model_kmeans_baseline(optimal_k).fit_predict(X_scaled)
- 
-        # Evaluation
-        sil, dbi, dunn = evaluate_baseline(X_scaled, labels)
- 
-        # Ergebnis in df_evaluate eintragen (Distanzmatrix = "euklidisch")
-        df_evaluate.loc[len(df_evaluate)] = [
-            i + 1,
-            "kmeans_baseline",
-            "euklidisch",
-            optimal_k,
-            sil,
-            dbi,
-            dunn,
-        ]
- 
-        # Labels speichern
-        run_labels = {
-            "card_id": idx,
-            "Durchlauf": i + 1,
-            "kmeans_baseline_euklidisch": labels,
-        }
-        all_labels.append(pd.DataFrame(run_labels))
- 
-        print(f"  [Info] Silhouette: {sil} | DBI: {dbi} | Dunn: {dunn}")
-        print("-------------------------------------------------------")
- 
-    df_labels_baseline = pd.concat(all_labels, ignore_index=True)
-    return df_evaluate, df_labels_baseline

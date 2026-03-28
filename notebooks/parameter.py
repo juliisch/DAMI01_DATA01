@@ -15,7 +15,7 @@ import os
 # Pfade zu den Daten 
 BASE_PATH = os.path.dirname(os.getcwd())
 INPUT_ORIGIN_PATH = os.path.join(BASE_PATH, "data/origin")
-INPUT_PATH = os.path.join(BASE_PATH, "data/processed/")
+INPUT_PATH = os.path.join(BASE_PATH, "data/processed")
 OUTPUT_PATH = os.path.join(BASE_PATH, "output")
 
 # Quelle: Claude AI (Anthropic). (2026a). Antwort von ChatGPT auf eine Anfrage zu Erstellung einer Kategorien-Dictionary der Variable description. Anhang C.

@@ -4,7 +4,7 @@
 
 | Variablenname     | Beschreibung                                    |
 |------------------|--------------------------------------------------|
-| id               | Transaktion-Identifikationsnummer                |
+| id               | Transaktions-Identifikationsnummer                |
 | date             | Datum                                            |
 | client_id        | Kundennummer                                     |
 | card_id          | Kartennummer                                     |
