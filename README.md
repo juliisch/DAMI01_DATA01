@@ -1,7 +1,7 @@
 # DAMI01_DATA01
 Dieses Repository enthält den Code-Teil der Studienarbeit für das Modul DAMI01 / DATA01 Data Analytics. 
 
-In diesem Projekt wird eine Time-Series-Clustering auf den Transaktionsdatensatz [Financial Transactions Dataset: Analytics von Kaggle](https://www.kaggle.com/datasets/computingvictor/transactions-fraud-datasets) angewendet. 
+In diesem Projekt wird eine Time Series Clustering (TSC) auf den Transaktionsdatensatz [Financial Transactions Dataset: Analytics von Kaggle](https://www.kaggle.com/datasets/computingvictor/transactions-fraud-datasets) angewendet. 
 
 Unter der Datei **[Variablenbeschreibung](DATA_INFORMATION.md)** ist eine Beschreibung der in den Datensätzen vorkommenden Variablen.
 
@@ -16,9 +16,9 @@ data_analytics_master/
 │   ├── origin/                                     # Originaldaten (gitignored)
 │   └── processed                                   # Verarbeitete Daten 
 ├── notebooks/                                      # Datensammlung
-│   ├── 01_Business_Data_Understanding.ipynb/       #
-│   ├── 02_Data_Preparation.ipynb/                  # 
-│   ├── 03_Modeling_Evaluation.ipynb                #
+│   ├── 01_Business_Data_Understanding.ipynb/       # Geschäftsverständnis und EDA
+│   ├── 02_Data_Preparation.ipynb/                  # Datenaufbereitung
+│   ├── 03_Modeling_Evaluation.ipynb                # Clustering und Evaluation
 │   ├── funktionen.py                               # Definierte Funktionen
 │   └── parameter.py                                # Globale Parameter und Map-Dictionaries
 └── output/                                         # Generierten Grafiken und ....
@@ -62,8 +62,8 @@ data_analytics_master/
 
     Nach der Installation der Bibliotheken kann es vorkommen, dass ein Neustart des Programms erforderlich ist, damit die Bibliotheken wirksam werden.
 
-4. **Führen Sie die Notebooks aus**
+4. **Führen Sie die Notebooks nacheinander aus**
 
-    - `notebooks/01_Business_Data_Understanding.iypnb`: Geschäftsverständnis und EDA
-    - `notebooks/02_Data_Preparation.iypnb`: Datenaufbereitung
-    - `notebooks/03_Modeling_Evaluation.iypnb`: Clustering und Evaluation
+    - `notebooks/01_Business_Data_Understanding.iypnb`
+    - `notebooks/02_Data_Preparation.iypnb`
+    - `notebooks/03_Modeling_Evaluation.iypnb`
