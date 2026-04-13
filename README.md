@@ -8,26 +8,35 @@ Unter der Datei **[Variablenbeschreibung](DATA_INFORMATION.md)** ist eine Beschr
 ## Projektstruktur
 
 ```
-data_analytics_master/
-├── README.md                                       # Diese Datei
+DAMI01_DATA01
+├── README.md                                       # Aktuelle Datei
 ├── DATA_INFORMATION.md                             # Variablenbeschreibung der verschiedenen Datensätze
 ├── requirements.txt                                # Python-Anforderungen (zu installierende Bibliotheken)
-├── data/                                           # Daten
+├── data/                                           # Daten (gitignored)
 │   ├── origin/                                     # Originaldaten (gitignored)
-│   └── processed                                   # Verarbeitete Daten 
+│   └── processed                                   # Verarbeitete Daten (gitignored)
 ├── notebooks/                                      # Datensammlung
 │   ├── 01_Business_Data_Understanding.ipynb/       # Geschäftsverständnis und EDA
-│   ├── 02_Data_Preparation.ipynb/                  # Datenaufbereitung
-│   ├── 03_Modeling_Evaluation.ipynb                # Clustering und Evaluation
+│   ├── 02_Data_Preparation.ipynb/                  # Datenvorbereitung und Feature Engineering
+│   ├── 03_Modeling_Evaluation.ipynb                # Modellierung und Evaluation
 │   ├── funktionen.py                               # Definierte Funktionen
 │   └── parameter.py                                # Globale Parameter und Map-Dictionaries
-└── output/                                         # Generierten Grafiken und ....
+└── output/                                         # Generierten Grafiken und Profilingreport
 
 ```
 
-### Installation und Ausführung der Simulation
+## Installation und Ausführung der Simulation
 
-1. **Klonen Sie das Repository und wechseln Sie in das Verzeichnis**
+1. **Kaggle Zugang (API) einrichten**
+
+    - Kaggle Account einlogen/erstellen ([https://www.kaggle.com](https://www.kaggle.com))
+    - Jason-Kaggle Datei generieren: Account - Settings - API Tokens - Generate New Token
+    - Datei herunterladen und unter `~/.kaggle/kaggle.json` ablegen
+    
+    Vollständige Anleitung siehe [https://www.kaggle.com/docs/api](https://www.kaggle.com/docs/api)
+
+
+2. **Klonen Sie das Repository und wechseln Sie in das Verzeichnis**
 
     ```bash
     git clone git@github.com:juliisch/DAMI01_DATA01.git
@@ -37,7 +46,7 @@ data_analytics_master/
     ```
 
 
-2. **Setze eine virtuelle Umgebung auf**
+3. **Setze eine virtuelle Umgebung auf**
     ```bash
     python3 -m venv dami01_env
     ```
@@ -52,7 +61,7 @@ data_analytics_master/
     python -m ipykernel install --user --name=dami01_env --display-name "Python (dami01_env)"
     ```
 
-3. **Bibliotheken installieren**
+4. **Bibliotheken installieren**
 
     Installieren Sie die benötigten Bibliotheken über die Datei `requirements.txt`.
 
@@ -62,7 +71,7 @@ data_analytics_master/
 
     Nach der Installation der Bibliotheken kann es vorkommen, dass ein Neustart des Programms erforderlich ist, damit die Bibliotheken wirksam werden.
 
-4. **Führen Sie die Notebooks nacheinander aus**
+5. **Führen Sie die Notebooks nacheinander aus**
 
     - `notebooks/01_Business_Data_Understanding.iypnb`
     - `notebooks/02_Data_Preparation.iypnb`
