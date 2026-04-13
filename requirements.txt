@@ -8,11 +8,3 @@ scikit-learn-extra
 tslearn
 kneed
 kagglehub
-
-
-
-
-
-
-
-pip install dtaidistance --no-binary dtaidistance

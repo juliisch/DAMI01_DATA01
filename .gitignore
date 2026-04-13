@@ -1,1 +1,6 @@
 data/
+dami01_env/
+venv/
+env/
+.venv/
+.env/
