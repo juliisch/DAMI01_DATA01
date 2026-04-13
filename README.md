@@ -73,6 +73,8 @@ DAMI01_DATA01
 
 5. **Führen Sie die Notebooks nacheinander aus**
 
+    Beim Ausführen den Kernel dami01_env wählen. 
+
     - `notebooks/01_Business_Data_Understanding.iypnb`
     - `notebooks/02_Data_Preparation.iypnb`
     - `notebooks/03_Modeling_Evaluation.iypnb`
