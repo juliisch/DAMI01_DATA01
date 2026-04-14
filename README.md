@@ -16,7 +16,7 @@ DAMI01_DATA01
 │   ├── origin/                                     # Originaldaten (gitignored)
 │   └── processed                                   # Verarbeitete Daten (gitignored)
 ├── notebooks/                                      # Datensammlung
-│   ├── 01_Business_Data_Understanding.ipynb/       # Geschäftsverständnis und EDA
+│   ├── 01_Business_Data_Understanding.ipynb/       # Geschäftsverständnis, Datenverstädnis und EDA
 │   ├── 02_Data_Preparation.ipynb/                  # Datenvorbereitung und Feature Engineering
 │   ├── 03_Modeling_Evaluation.ipynb                # Modellierung und Evaluation
 │   ├── funktionen.py                               # Definierte Funktionen
