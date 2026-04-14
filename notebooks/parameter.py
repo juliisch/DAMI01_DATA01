@@ -13,8 +13,8 @@ from pathlib import Path
 
 BASE_PATH = Path(".") 
 BASE_PATH_2 = Path("..") 
-INPUT_ORIGIN_PATH = BASE_PATH / "data" / "origin"
-INPUT_PATH = BASE_PATH / "data" / "processed"
+INPUT_ORIGIN_PATH = BASE_PATH_2 / "data" / "origin"
+INPUT_PATH = BASE_PATH_2 / "data" / "processed"
 OUTPUT_PATH = BASE_PATH_2 / "output"
 
 # Sicherstellen, dass die Ordner existieren
