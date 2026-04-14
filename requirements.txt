@@ -10,3 +10,4 @@ kneed
 kagglehub
 jinja2
 ydata_profiling
+scipy==1.14.1
