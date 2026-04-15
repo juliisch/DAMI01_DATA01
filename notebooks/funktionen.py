@@ -478,6 +478,7 @@ def run_model(
                     df_evaluate (Evaluationsergebnisse-DataFrame)
                     n_run (Durchgangsnummer)
                     x_scaled (skalierte Zeitreihen)
+                    x_ts (Datensatz im tslearn Format)
     Output:         dict_labels (Dictionary mit Cluster-Zuordnungen
                     pro DTW-Variante)
     Funktionsweise: Jedes Modell wird über alle DTW-Varianten
