@@ -14,10 +14,10 @@ DAMI01_DATA01
 ├── requirements.txt                                # Python-Anforderungen (zu installierende Bibliotheken)
 ├── data/                                           # Daten (gitignored)
 │   ├── origin/                                     # Originaldaten (gitignored)
-│   └── processed                                   # Verarbeitete Daten (gitignored)
+│   └── processed/                                  # Verarbeitete Daten (gitignored)
 ├── notebooks/                                      # Datensammlung
-│   ├── 01_Business_Data_Understanding.ipynb/       # Geschäftsverständnis, Datenverstädnis und EDA
-│   ├── 02_Data_Preparation.ipynb/                  # Datenvorbereitung und Feature Engineering
+│   ├── 01_Business_Data_Understanding.ipynb        # Geschäftsverständnis, Datenverstädnis und EDA
+│   ├── 02_Data_Preparation.ipynb                   # Datenvorbereitung und Feature Engineering
 │   ├── 03_Modeling_Evaluation.ipynb                # Modellierung und Evaluation
 │   ├── funktionen.py                               # Definierte Funktionen
 │   └── parameter.py                                # Globale Parameter und Map-Dictionaries
@@ -72,6 +72,9 @@ DAMI01_DATA01
     Nach der Installation der Bibliotheken kann es vorkommen, dass ein Neustart des Programms erforderlich ist, damit die Bibliotheken wirksam werden.
 
 5. **Führen Sie die Notebooks nacheinander aus**
+
+    > ⚠️ **Wichtiger Hinweis:** Die Datensätze sind aufgrund der Größe nicht im Repository enthalten (`data/` ist gitignored). Die Daten werden erst beim Ausführen des ersten Notebooks heruntergeladen und im zweiten aufbereitet. Die Notebooks müssen daher **zwingend in der angegebenen Reihenfolge** ausgeführt werden.
+
 
     Beim Ausführen den Kernel dami01_env wählen. 
 
